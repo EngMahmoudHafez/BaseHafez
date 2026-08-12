@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    paths:
+        - app
+
+    # Start pragmatic on an existing codebase; raise over time (max is 10).
+    level: 5
+
+    # Modular monolith: app/Modules is the source of truth.
+    excludePaths:
+        - app/Modules/*/database/migrations/*
+        # Telescope's published, dev-only provider (vendor boilerplate).
+        - app/Providers/TelescopeServiceProvider.php

@@ -1,0 +1,60 @@
+<?php
+
+return [
+    'login' => 'Login',
+    'welcome' => 'Welcome',
+    'email' => 'Email',
+    'password' => 'Password',
+    'remember_me' => 'Remember Me',
+    'forgot_password' => 'Forgot Password?',
+    'forgot_password_instruction' => 'Enter your email and we will send you a reset link.',
+    'send_reset_link' => 'Send Reset Link',
+    'back_to_login' => 'Back to login',
+    'reset_password' => 'Reset Password',
+    'reset_password_instruction' => 'Enter your new password to continue.',
+    'reset_password_button' => 'Reset Password',
+    'reset_link_sent' => 'A reset link has been sent to your email.',
+    'reset_link_failed' => 'Unable to send reset link. Please check your email.',
+    'password_reset_success' => 'Your password has been reset successfully.',
+    'password_reset_failed' => 'The reset link is invalid or expired.',
+    'reset_password_subject' => 'Reset Your Dashboard Password',
+    'reset_password_email_line' => 'You are receiving this email because we received a password reset request for your dashboard account.',
+    'reset_password_expire_line' => 'This password reset link will expire in :count minutes.',
+    'reset_password_ignore_line' => 'If you did not request a password reset, no further action is required.',
+    'logout' => 'Logout',
+    'failed' => 'These credentials do not match our records.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+
+    // Profile
+    'edit_profile' => 'Edit Profile',
+    'Edit Profile' => 'Edit Profile',
+    'Edit Personal Data' => 'Edit Personal Data',
+    'Edit Password' => 'Edit Password',
+    'name' => 'Name',
+    'phone' => 'Phone',
+    'current password' => 'Current Password',
+    'current_password' => 'Current Password',
+    'new password' => 'New Password',
+    'new_password' => 'New Password',
+    'password confirmation' => 'Password Confirmation',
+    'password_confirmation' => 'Confirm New Password',
+    'show password' => 'Show Password',
+    'edit' => 'Edit',
+
+    // Extended Profile
+    'bio' => 'Bio',
+    'background_image' => 'Background Image',
+    'external_links' => 'External Links',
+    'image' => 'Image',
+
+    'phone_not_verified' => 'Please verify your phone number before publishing ads.',
+
+    // Manager management guards (RBAC hierarchy)
+    'cannot_block_yourself' => 'You cannot block your own account.',
+    'cannot_delete_yourself' => 'You cannot delete your own account.',
+    'cannot_manage_higher_manager' => 'You are not allowed to manage a manager at your level or above.',
+    'cannot_remove_last_super_admin' => 'You cannot block or delete the last active super admin.',
+    'cannot_modify_core_role' => 'The core super admin and admin roles cannot be modified or deleted.',
+    'role_not_assignable' => 'You cannot assign a role higher than your own.',
+    'role_has_assigned_managers' => 'This role still has managers assigned. Reassign them before deleting it.',
+];

@@ -1,0 +1,44 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "engines": {
+        "node": ">=22"
+    },
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "dependencies": {
+        "@iconify/json": "2.2.512",
+        "@iconify/utils": "2.3.0",
+        "@popperjs/core": "2.11.8",
+        "@simonwep/pickr": "1.9.1",
+        "@yaireo/tagify": "4.38.0",
+        "apexcharts": "4.2.0",
+        "bootstrap": "5.3.6",
+        "cleave-zen": "0.0.17",
+        "flatpickr": "4.6.13",
+        "hammerjs": "2.0.8",
+        "jquery": "3.7.1",
+        "node-waves": "0.7.6",
+        "perfect-scrollbar": "1.5.6",
+        "quill": "2.0.3",
+        "select2": "4.0.13",
+        "sweetalert2": "11.26.25"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.5.4",
+        "axios": "^1.11.0",
+        "concurrently": "^10.0.4",
+        "laravel-vite-plugin": "^3.1.3",
+        "postcss": "^8.5.26",
+        "prettier": "^3.9.6",
+        "prettier-plugin-blade": "^3.2.2",
+        "sass": "^1.102.0",
+        "vite": "^8.2.1"
+    },
+    "overrides": {
+        "esbuild": "0.28.1"
+    }
+}

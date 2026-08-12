@@ -1,0 +1,78 @@
+{
+  "menu": [
+    {
+      "route": "dashboard.home",
+      "name": "dashboard.dashboard",
+      "icon": "menu-icon tf-icons ti ti-smart-home",
+      "slug": "dashboard.home",
+      "permission": "dashboard-view"
+    },
+    {
+      "route": "roles.index",
+      "name": "dashboard.roles",
+      "icon": "menu-icon tf-icons ti ti-shield",
+      "slug": "roles",
+      "permission": "roles-read"
+    },
+    {
+      "route": "managers.index",
+      "name": "dashboard.staff",
+      "icon": "menu-icon tf-icons ti ti-user-check",
+      "slug": "managers",
+      "permission": "managers-read"
+    },
+    {
+      "route": "users.index",
+      "name": "dashboard.users",
+      "icon": "menu-icon tf-icons ti ti-users",
+      "slug": "users",
+      "permission": "users-read"
+    },
+    {
+      "name": "dashboard.structures",
+      "icon": "menu-icon tf-icons ti ti-layout",
+      "slug": "dashboard.structures",
+      "permission": "structures-read",
+      "submenu": [
+        {
+          "route": "dashboard.structures.hero.index",
+          "name": "dashboard.Hero Section",
+          "slug": "dashboard.structures.hero"
+        },
+        {
+          "route": "dashboard.structures.about.index",
+          "name": "dashboard.About Us Section",
+          "slug": "dashboard.structures.about"
+        },
+        {
+          "route": "dashboard.structures.why_choose_us.index",
+          "name": "dashboard.Why Choose Us",
+          "slug": "dashboard.structures.why_choose_us"
+        },
+        {
+          "route": "dashboard.structures.contact.index",
+          "name": "dashboard.Contact Section",
+          "slug": "dashboard.structures.contact"
+        },
+        {
+          "route": "dashboard.structures.footer.index",
+          "name": "dashboard.footer",
+          "slug": "dashboard.structures.footer"
+        }
+      ]
+    },
+    {
+      "route": "dashboard.contact-messages.index",
+      "name": "dashboard.Contact Messages",
+      "icon": "menu-icon tf-icons ti ti-mail",
+      "slug": "dashboard.contact-messages",
+      "permission": "contact-messages-read"
+    },
+    {
+      "route": "dashboard.notifications.index",
+      "name": "notifications.notifications",
+      "icon": "menu-icon tf-icons ti ti-bell",
+      "slug": "dashboard.notifications"
+    }
+  ]
+}

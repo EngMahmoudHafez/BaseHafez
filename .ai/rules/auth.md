@@ -1,0 +1,15 @@
+---
+paths:
+  - 'app/Modules/Auth/**'
+---
+
+# Auth
+
+## RBAC rank hierarchy for manager/role management
+Managers are ranked by their highest role via RoleName::rank() (super_admin=100, admin=90, content_manager/accountant=50, sales/support=30; custom/dashboard roles=0 via RoleName::rankFor()). Enforcement (service-guard pattern, throws ValidationException like ensureNotCurrentManager): ManagerService::ensureCanManage() gates update/updatePassword/toggle/destroy (super_admin may manage anyone; others only strictly-lower rank). Role assignment is gated by the AssignableRole rule on role_id in Store/UpdateManagerRequest (cannot assign a role above your own rank; super_admin can assign any). Lockout guards: ensureNotLastSuperAdmin (toggle/destroy) + ensureSuperAdminNotDemotedToLast (update role change). RoleService::ensureNotCoreRole() blocks editing/deleting super_admin & admin roles (RoleName::isCoreName). Do not weaken these or move authorization out of the service without preserving every guard + its test in tests/Feature/Auth/ManagerRbacHierarchyTest.php.
+
+## API token invalidation: token_version + api.active middleware
+Users carry a `token_version` column (in the users CREATE migration). It is embedded in every JWT as the `tv` claim via User::getJWTCustomClaims(). The `api.active` middleware (EnsureApiUserActive, aliased in bootstrap/app.php, applied together with auth:api in Routes/api/v1/web.php) rejects (a) blocked users via isActiveAccount() and (b) tokens whose `tv` != $user->tokenVersion(). PasswordService::reset() and updatePassword() bump token_version (forceFill) to revoke all prior tokens. JWT_TTL default is 60 min. IMPORTANT: access token_version/status through the typed methods $user->tokenVersion()/isActiveAccount() (getAttribute-based) — NOT the magic `$user->token_version`/`$user->status` — because Larastan has no schema scan here and flags magic column access as undefined property. Tests: tests/Feature/Auth/ApiTokenInvalidationTest.php.
+
+## Auth hardening invariants (enumeration, throttle, single-use tokens)
+Keep these: (1) Dashboard login attempts credentials FIRST, then checks isActiveAccount — unknown email / wrong password / inactive all return the same generic error until the correct password is given (no enumeration). (2) Dashboard forgot-password always returns auth.reset_link_sent regardless of whether the email exists. (3) Dashboard login/forgot/reset routes carry throttle:dashboard-auth (limiter defined in AppServiceProvider, per email+IP then per IP). (4) API password reset consumes the reset token with Cache::pull (single-use); OTP verify consumes verified_at with an atomic conditional UPDATE (whereNull->update, check affected rows). (5) OtpEmail implements ShouldQueue and issueEmail uses Mail::queue (async; no SMTP timing oracle). (6) bootstrap/app.php trustHosts(at: closure from config('app.url')) — MUST be a closure (config isn't bound at middleware-config time). KNOWN GAP: phone OTP has no real SMS/WhatsApp provider — generateCode returns a code but nothing delivers it in production; wire a provider per project.

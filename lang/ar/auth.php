@@ -1,0 +1,60 @@
+<?php
+
+return [
+    'login' => 'تسجيل الدخول',
+    'welcome' => 'مرحباً بك',
+    'email' => 'البريد الإلكتروني',
+    'password' => 'كلمة المرور',
+    'remember_me' => 'تذكرني',
+    'forgot_password' => 'نسيت كلمة المرور؟',
+    'forgot_password_instruction' => 'ادخل بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين كلمة المرور.',
+    'send_reset_link' => 'إرسال رابط إعادة التعيين',
+    'back_to_login' => 'العودة لتسجيل الدخول',
+    'reset_password' => 'إعادة تعيين كلمة المرور',
+    'reset_password_instruction' => 'ادخل كلمة المرور الجديدة للمتابعة.',
+    'reset_password_button' => 'إعادة تعيين كلمة المرور',
+    'reset_link_sent' => 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.',
+    'reset_link_failed' => 'تعذر إرسال رابط إعادة التعيين. يرجى التحقق من البريد الإلكتروني.',
+    'password_reset_success' => 'تم إعادة تعيين كلمة المرور بنجاح.',
+    'password_reset_failed' => 'رابط إعادة التعيين غير صالح أو منتهي الصلاحية.',
+    'reset_password_subject' => 'إعادة تعيين كلمة مرور لوحة التحكم',
+    'reset_password_email_line' => 'وصلتك هذه الرسالة لأننا تلقينا طلبًا لإعادة تعيين كلمة المرور لحسابك في لوحة التحكم.',
+    'reset_password_expire_line' => 'سينتهي رابط إعادة تعيين كلمة المرور خلال :count دقيقة.',
+    'reset_password_ignore_line' => 'إذا لم تطلب إعادة تعيين كلمة المرور، فلا حاجة لاتخاذ أي إجراء.',
+    'logout' => 'تسجيل الخروج',
+    'failed' => 'بيانات الاعتماد هذه غير متطابقة مع سجلاتنا.',
+    'throttle' => 'محاولات تسجيل دخول كثيرة جداً. يرجى المحاولة مرة أخرى بعد :seconds ثانية.',
+
+    // Profile
+    'edit_profile' => 'تعديل الملف الشخصي',
+    'Edit Profile' => 'تعديل الملف الشخصي',
+    'Edit Personal Data' => 'تعديل البيانات الشخصية',
+    'Edit Password' => 'تعديل كلمة المرور',
+    'name' => 'الاسم',
+    'phone' => 'رقم الهاتف',
+    'current password' => 'كلمة المرور الحالية',
+    'current_password' => 'كلمة المرور الحالية',
+    'new password' => 'كلمة المرور الجديدة',
+    'new_password' => 'كلمة المرور الجديدة',
+    'password confirmation' => 'تأكيد كلمة المرور',
+    'password_confirmation' => 'تأكيد كلمة المرور الجديدة',
+    'show password' => 'إظهار كلمة المرور',
+    'edit' => 'تعديل',
+
+    // Extended Profile
+    'bio' => 'نبذة تعريفية',
+    'background_image' => 'صورة الخلفية',
+    'external_links' => 'روابط خارجية',
+    'image' => 'الصورة',
+
+    'phone_not_verified' => 'يرجى توثيق رقم هاتفك قبل نشر الإعلانات.',
+
+    // ضوابط إدارة المديرين (تسلسل الصلاحيات)
+    'cannot_block_yourself' => 'لا يمكنك حظر حسابك الخاص.',
+    'cannot_delete_yourself' => 'لا يمكنك حذف حسابك الخاص.',
+    'cannot_manage_higher_manager' => 'لا يمكنك إدارة مدير في مستواك أو أعلى منك.',
+    'cannot_remove_last_super_admin' => 'لا يمكنك حظر أو حذف آخر مدير عام نشط.',
+    'cannot_modify_core_role' => 'لا يمكن تعديل أو حذف دورَي المدير العام والمدير الأساسيين.',
+    'role_not_assignable' => 'لا يمكنك إسناد دور أعلى من دورك.',
+    'role_has_assigned_managers' => 'هذا الدور لا يزال مُسندًا لمديرين. أعد إسنادهم قبل حذفه.',
+];
