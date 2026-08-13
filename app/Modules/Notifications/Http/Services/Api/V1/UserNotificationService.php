@@ -6,6 +6,7 @@ use App\Modules\Notifications\Models\Notification;
 use App\Modules\Notifications\Repositories\NotificationRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class UserNotificationService
 {
@@ -14,44 +15,44 @@ class UserNotificationService
     ) {}
 
     /** @return LengthAwarePaginator<int, Notification> */
-    public function paginate(int $userId, int $perPage): LengthAwarePaginator
+    public function paginate(Model $notifiable, int $perPage): LengthAwarePaginator
     {
-        return $this->notifications->paginateForUser($userId, $perPage);
+        return $this->notifications->paginateFor($notifiable, $perPage);
     }
 
     /** @return Collection<int, Notification> */
-    public function unread(int $userId): Collection
+    public function unread(Model $notifiable): Collection
     {
-        return $this->notifications->unreadForUser($userId);
+        return $this->notifications->unreadFor($notifiable);
     }
 
-    public function unreadCount(int $userId): int
+    public function unreadCount(Model $notifiable): int
     {
-        return $this->notifications->countUnreadForUser($userId);
+        return $this->notifications->countUnreadFor($notifiable);
     }
 
-    public function findForUser(int $userId, int $notificationId): Notification
+    public function findForNotifiable(Model $notifiable, int $notificationId): Notification
     {
-        return $this->notifications->findForUserOrFail($userId, $notificationId);
+        return $this->notifications->findForOrFail($notifiable, $notificationId);
     }
 
-    public function markAsRead(int $userId, int $notificationId): Notification
+    public function markAsRead(Model $notifiable, int $notificationId): Notification
     {
-        return $this->findForUser($userId, $notificationId)->markAsRead();
+        return $this->findForNotifiable($notifiable, $notificationId)->markAsRead();
     }
 
-    public function markAllAsRead(int $userId): int
+    public function markAllAsRead(Model $notifiable): int
     {
-        return $this->notifications->markAllAsReadForUser($userId);
+        return $this->notifications->markAllAsReadFor($notifiable);
     }
 
-    public function deleteRead(int $userId): int
+    public function deleteRead(Model $notifiable): int
     {
-        return $this->notifications->deleteReadForUser($userId);
+        return $this->notifications->deleteReadFor($notifiable);
     }
 
-    public function delete(int $userId, int $notificationId): void
+    public function delete(Model $notifiable, int $notificationId): void
     {
-        $this->findForUser($userId, $notificationId)->delete();
+        $this->findForNotifiable($notifiable, $notificationId)->delete();
     }
 }

@@ -29,7 +29,7 @@
     "laravel/telescope": "^5.22",
     "mockery/mockery": "^1.6",
     "nunomaduro/collision": "^8.6",
-    "pestphp/pest": "^4.0",
+    "pestphp/pest": "^4.4",
     "phpunit/phpunit": "^12.3"
   },
   "autoload": {
@@ -50,7 +50,7 @@
   "scripts": {
     "setup": [
       "composer install",
-      "@php artisan base:install --seed",
+      "@php artisan base:setup --seed",
       "npm ci",
       "npm run build"
     ],
@@ -60,14 +60,14 @@
     ],
     "test": [
       "@php artisan config:clear --ansi",
-      "@php artisan test"
+      "@php vendor/bin/pest"
     ],
     "lint": "pint",
     "stan": "phpstan analyse",
     "check": [
       "@lint --test",
       "@stan --no-progress",
-      "@php artisan test --compact",
+      "@php vendor/bin/pest --compact",
       "@composer audit"
     ],
     "post-autoload-dump": [
@@ -81,7 +81,7 @@
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
     ],
     "post-create-project-cmd": [
-      "@php artisan base:install --ci --ansi"
+      "@php artisan base:setup --ci --ansi"
     ],
     "pre-package-uninstall": [
       "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"

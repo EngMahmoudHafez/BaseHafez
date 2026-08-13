@@ -93,6 +93,18 @@
       "icon": "menu-icon tf-icons ti ti-bell",
       "slug": "dashboard.notifications",
       "permission": "notifications-read"
+    },
+    {
+      "menuHeader": "settings::settings.menu_section",
+      "slug": "menu-system",
+      "permission": "settings-read"
+    },
+    {
+      "route": "dashboard.settings.index",
+      "name": "settings::settings.title",
+      "icon": "menu-icon tf-icons ti ti-settings",
+      "slug": "dashboard.settings",
+      "permission": "settings-read"
     }
   ]
 }

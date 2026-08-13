@@ -8,6 +8,7 @@ $administratorPermissions = [
     'structures' => 'r,u',
     'contact-messages' => 'r,u,d',
     'notifications' => 'c,r,u,d',
+    'settings' => 'r,u',
 ];
 
 return [

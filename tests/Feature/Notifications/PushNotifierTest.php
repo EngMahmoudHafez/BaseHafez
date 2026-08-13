@@ -29,7 +29,8 @@ test('send persists pushes and broadcasts', function () {
 
     $this->assertDatabaseHas('notifications', [
         'id' => $notification->id,
-        'user_id' => $user->getKey(),
+        'notifiable_type' => $notifiable->getMorphClass(),
+        'notifiable_id' => $notifiable->getKey(),
         'title_ar' => 'Welcome',
         'title_en' => 'Welcome',
         'body_en' => 'Thanks for joining',
@@ -60,7 +61,8 @@ test('send skips push when recipient has no device token support', function () {
 
     $this->assertDatabaseHas('notifications', [
         'id' => $notification->id,
-        'user_id' => $user->getKey(),
+        'notifiable_type' => $user->getMorphClass(),
+        'notifiable_id' => $user->getKey(),
     ]);
     NotificationFacade::assertNothingSent();
     Event::assertDispatched(NotificationSent::class);

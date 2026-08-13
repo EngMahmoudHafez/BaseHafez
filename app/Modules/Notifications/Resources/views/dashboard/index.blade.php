@@ -99,8 +99,8 @@
             @forelse ($notifications as $notification)
                 <tr>
                     <td>
-                        <div class="fw-medium">{{ $notification->user->name }}</div>
-                        <small class="text-muted">{{ $notification->user->phone }}</small>
+                        <div class="fw-medium">{{ $notification->notifiable->name }}</div>
+                        <small class="text-muted">{{ $notification->notifiable->phone }}</small>
                     </td>
                     <td>
                         <div class="fw-medium">{{ \Illuminate\Support\Str::limit($notification->title, 45) }}</div>

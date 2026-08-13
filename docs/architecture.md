@@ -6,8 +6,9 @@
 | --- | --- | --- |
 | `Auth` | API authentication, profiles, dashboard login, users, staff, roles | Analytics or product-specific learning data |
 | `Base` | module discovery, repository primitives, shared HTTP/UI helpers, dashboard layout | Complete business screens |
-| `Notifications` | generic database notifications and cleanup | Course, meeting, payment, or scheduling workflows |
+| `Notifications` | polymorphic database notifications, device tokens, push/broadcast delivery, and cleanup | Course, meeting, payment, or scheduling workflows |
 | `Structure` | editable public-site structure and contact messages | Authentication or notification delivery |
+| `Settings` | generic key/value configuration (`get`/`set`, cached) + dashboard editor | Project-specific business values (seed those in the project, not the base) |
 
 The directory `app/Modules` is the source of truth. A removed module is absent everywhere: runtime code, routes, schedules, menu entries, permissions, seeders, translations, configuration, and tests.
 
@@ -71,11 +72,11 @@ User profiles require an authenticated API user. Password recovery returns the s
 
 ## Shared conventions
 
-Base-wide conventions (established 2026-08). Follow them for new code; all shared traits live in `App\Modules\Base\Concerns`.
+Base-wide conventions (established 2026-08). Follow them for new code; cross-cutting shared traits live in `App\Modules\Base\Concerns`, while a module-specific concern lives in its owning module (e.g. `App\Modules\Notifications\Concerns\HasDeviceTokens`).
 
 - **API responses** — one shape, one source: `App\Modules\Base\Http\Responses\ApiResponse::success($status, $message, $data)` / `::error(...)`. It normalizes `JsonResource`, `ResourceCollection`, and `LengthAwarePaginator` into `{status, message, data, pagination?}`. Do not build ad-hoc JSON envelopes.
 - **API resources** — each model exposes `XResource` (full record) and `XSummaryResource` (id/name/photo… for lists and embedding). Shared summaries (`UserSummaryResource`, `ManagerSummaryResource`) are reused wherever that model appears.
-- **Images** — `HasImages` gives a model `putImage($file)`, `image_url`, and `deleteImage()`. Add the trait; the column defaults to `avatar` and files land under `{plural model}/{column}`. Override `imageColumn()` / `imageFolder()` / `shouldOptimizeImages()` only when needed.
+- **Files & images** — `InteractsWithFiles` is the single file concern: generic `storeFile` / `storeImage` / `replaceImage` / `safeDeleteFiles` for Services and Repositories, plus model sugar `putImage($file)` / `image_url` / `deleteImage()` (column defaults to `avatar`, files land under `{plural model}/{column}`; override `imageColumn()` / `imageFolder()`). There is exactly one `optimizeImage()` in the codebase — it lives here.
 - **Dashboard lists** — filtering comes from `HandlesResourceQuery::applyDashboardFilters(...)`: a service declares `searchable`/`filterable` and the trait builds the query.
 - **Notifications** — `App\Modules\Notifications\Services\PushNotifier::send($notifiable, $title, $body, $data)` writes the DB notification, pushes via FCM, and broadcasts (env-gated). See `docs/notifications.md`.
 - **Editable site content** — `Structure` is a section registry: define a section once in `app/Modules/Structure/Support/sections.php` and its editor, validation, routes, and serialization follow. No per-section controller/request/view.

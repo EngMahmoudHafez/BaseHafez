@@ -56,7 +56,7 @@ adding it.
 | i18n | `mcamara/laravel-localization`, Arabic + English, RTL + LTR |
 | Static analysis | Larastan (PHPStan) |
 | Style | Laravel Pint (PHP only; Blade is hand-formatted) |
-| Tests | Pest 4 (on PHPUnit 12), disposable in-memory SQLite |
+| Tests | Pest 4 (on PHPUnit 12), MySQL 8 (dedicated *test* database) |
 | AI | Laravel Boost, `.ai/rules`, project skills under `.claude/skills`, guard skills |
 | Dev observability | Telescope (local only) |
 
@@ -145,15 +145,16 @@ composer audit
 npm audit
 vendor/bin/pint --test          # PHP formatting (Blade is hand-formatted)
 vendor/bin/phpstan analyse      # Larastan
-php artisan test --compact      # disposable SQLite
+vendor/bin/pest --compact       # Pest on MySQL (dedicated *test* database)
 php artisan route:list
 php artisan view:cache
 npm run build
 git diff --check
 ```
 
-Never call a gate successful when it did not run. If a database driver (`pdo_sqlite`) is missing
-locally, say so and rely on CI, which provisions it.
+Never call a gate successful when it did not run. The base runs on **MySQL 8**; point the suite at a
+dedicated test database (its name must contain `test`) — never the app database (`RefreshDatabase`
+wipes the connected schema). If MySQL is unreachable locally, say so and rely on CI, which provisions it.
 
 ## 6. AI tooling map
 
@@ -192,9 +193,11 @@ here — keep those in the matching spec or audit report.
   response contract that unwraps resources/paginators uniformly.
 - 2026-08-11: Per-model API resources — `XResource` (full) + `XSummaryResource` (list/embed), reused
   across surfaces. Reason: consistent, DRY response bodies.
-- 2026-08-11: All shared traits live in `App\Modules\Base\Concerns` — `HasImages` (declare a column and
-  get storage/URL/replace, optional intervention), `HandlesResourceQuery` (declarative dashboard
-  search/filter), `HasDeviceTokens`, `FileTrait`. Reason: one home, minimal model boilerplate.
+- 2026-08-11: Shared cross-cutting traits live in `App\Modules\Base\Concerns` — `InteractsWithFiles`
+  (the single file/image concern: generic store/replace/safe-delete for Services & Repositories plus
+  model sugar `putImage`/`image_url`/`deleteImage`; exactly one `optimizeImage`), `HandlesResourceQuery`
+  (declarative dashboard search/filter). A module-specific concern lives in its owning module — e.g.
+  `App\Modules\Notifications\Concerns\HasDeviceTokens`. Reason: one home per concern, minimal boilerplate.
 - 2026-08-11: Every dashboard screen is built from the `x-dashboard.*` component set (table, filter-bar,
   actions, form-page, field, details). Reason: one consistent, low-boilerplate way to build screens.
 - 2026-08-11: `Structure` is a declarative section registry (`app/Modules/Structure/Support/sections.php`)
@@ -206,7 +209,7 @@ here — keep those in the matching spec or audit report.
   discoverable provider, canonical paths), not a whitelist of module names. Reason: this is a base to
   build on — new modules must be allowed if they conform, while a present-but-unloaded module still
   fails loudly.
-- 2026-08-12: One installer, `php artisan base:install` (`--ci`, `--seed`); README, `composer setup`,
+- 2026-08-12: One installer, `php artisan base:setup` (`--ci`, `--seed`); README, `composer setup`,
   and CI all call it. Reason: a single idempotent source of truth so documentation and automation
   cannot drift.
 - 2026-08-12: `php artisan base:doctor --production` gates unsafe production settings (debug, wildcard

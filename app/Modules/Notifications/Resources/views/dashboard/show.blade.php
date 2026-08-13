@@ -27,7 +27,7 @@
             </div>
             <div class="card-body">
                 <dl class="dashboard-details-grid">
-                    <x-dashboard.detail :label="__('notifications.fields.user')" :value="$notification->user->name" />
+                    <x-dashboard.detail :label="__('notifications.fields.user')" :value="$notification->notifiable->name" />
                     <x-dashboard.detail :label="__('notifications.fields.type')" :value="__('notifications.types.' . $notification->type)" />
                     <x-dashboard.detail :label="__('notifications.fields.sent_at')" :value="optional($notification->sent_at)->format('Y-m-d H:i')" />
                     <x-dashboard.detail :label="__('notifications.fields.title_ar')" :value="$notification->title_ar" />

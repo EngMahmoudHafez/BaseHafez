@@ -5,8 +5,8 @@ namespace App\Modules\Auth\Models;
 use App\Modules\Auth\database\factories\ManagerFactory;
 use App\Modules\Auth\Enums\RoleName;
 use App\Modules\Auth\Enums\UserStatus;
-use App\Modules\Base\Concerns\HasDeviceTokens;
-use App\Modules\Base\Concerns\HasImages;
+use App\Modules\Base\Concerns\InteractsWithFiles;
+use App\Modules\Notifications\Concerns\HasDeviceTokens;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,7 +39,7 @@ use Laratrust\Traits\HasRolesAndPermissions;
 class Manager extends Authenticatable implements LaratrustUser
 {
     /** @use HasFactory<ManagerFactory> */
-    use HasDeviceTokens, HasFactory, HasImages, Notifiable;
+    use HasDeviceTokens, HasFactory, InteractsWithFiles, Notifiable;
 
     use HasRolesAndPermissions {
         hasPermission as laratrustHasPermission;

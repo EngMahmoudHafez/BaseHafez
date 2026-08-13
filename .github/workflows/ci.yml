@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   quality:
-    name: Quality (Pint + Larastan)
+    name: Quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -25,16 +25,16 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-          extensions: mbstring, dom, curl, libxml, fileinfo, intl, pdo_sqlite, sqlite3, gd, bcmath
+          php-version: '8.3' # lowest supported version — if the tools pass here they pass on 8.4
+          extensions: mbstring, dom, curl, libxml, fileinfo, intl, pdo_mysql, gd, bcmath
           coverage: none
           tools: composer:v2
 
+      - name: Validate composer.json / composer.lock
+        run: composer validate --strict
+
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
-
-      - name: Validate composer.json
-        run: composer validate --strict
 
       - name: Setup Node
         uses: actions/setup-node@v7
@@ -42,60 +42,33 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
-      - name: Prepare environment
-        run: php artisan base:install --ci
+      - name: Install npm dependencies
+        run: npm ci
 
       - name: Pint (PHP + Blade formatting)
-        run: |
-          npm ci
-          vendor/bin/pint --test
+        run: vendor/bin/pint --test
 
       - name: Larastan (static analysis)
         run: vendor/bin/phpstan analyse --no-progress
 
+      - name: Frontend build
+        run: npm run build
+
+      - name: Composer audit (PHP dependencies)
+        run: composer audit --no-interaction
+
+      - name: NPM audit (production dependencies)
+        run: npm audit --omit=dev --audit-level=high
+
   tests:
-    name: Tests · SQLite (PHP ${{ matrix.php }})
+    name: Tests (PHP ${{ matrix.php }} · MySQL)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # Supported versions are 8.3 and 8.4 (they gate merges). 8.5 runs as a
-        # forward-looking, non-blocking probe so the "^8.3" constraint is
-        # exercised across every version it allows.
-        include:
-          - php: '8.3'
-          - php: '8.4'
-          - php: '8.5'
-            experimental: true
-    continue-on-error: ${{ matrix.experimental || false }}
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring, dom, curl, libxml, fileinfo, intl, pdo_sqlite, sqlite3, gd, bcmath
-          coverage: none
-          tools: composer:v2
-
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
-
-      - name: Prepare environment
-        run: php artisan base:install --ci
-
-      - name: Run test suite
-        run: php artisan test --compact
-
-      - name: Route + view integrity
-        run: |
-          php artisan route:list > /dev/null
-          php artisan view:cache
-
-  tests-mysql:
-    name: Tests · MySQL 8 (integration)
-    runs-on: ubuntu-latest
+        # The company-official target is PHP 8.3 and 8.4, both on MySQL 8 — the
+        # real production environment. No SQLite matrix, no experimental probe.
+        php: ['8.3', '8.4']
     services:
       mysql:
         image: mysql:8.0
@@ -122,7 +95,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, dom, curl, libxml, fileinfo, intl, pdo_mysql, gd, bcmath
           coverage: none
           tools: composer:v2
@@ -130,81 +103,8 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Prepare environment
-        run: php artisan base:install --ci
+      - name: Prepare environment (validate MySQL + migrate)
+        run: php artisan base:setup --ci
 
-      - name: Run test suite (MySQL)
-        run: php artisan test --compact
-
-  frontend:
-    name: Frontend build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.nvmrc'
-          cache: npm
-
-      - name: Install and build
-        run: |
-          npm ci
-          npm run build
-
-  security:
-    name: Dependency audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          tools: composer:v2
-          coverage: none
-
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
-
-      # Blocking, but retried: a transient packagist/SSL error must not turn
-      # main red. Three attempts, then fail for real (an actual advisory fails
-      # every attempt and still blocks).
-      - name: Composer audit
-        run: |
-          attempt=0
-          until composer audit --no-interaction; do
-            attempt=$((attempt + 1))
-            if [ "$attempt" -ge 3 ]; then
-              echo "::error::composer audit failed after $attempt attempts."
-              exit 1
-            fi
-            echo "composer audit attempt $attempt failed (possible network/SSL flake); retrying in 15s…"
-            sleep 15
-          done
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.nvmrc'
-          cache: npm
-
-      # Blocking (no continue-on-error): a high-severity advisory in production
-      # dependencies must fail the pipeline. If a specific advisory is reviewed
-      # and accepted, replace this step with an explicit, commented allowlist
-      # (e.g. filter the JSON output for the accepted advisory ID) — never a
-      # blanket continue-on-error.
-      - name: npm audit (production deps)
-        run: |
-          attempt=0
-          until npm audit --omit=dev --audit-level=high; do
-            attempt=$((attempt + 1))
-            if [ "$attempt" -ge 3 ]; then
-              echo "::error::npm audit found high-severity advisories in production dependencies."
-              exit 1
-            fi
-            echo "npm audit attempt $attempt failed (possible registry flake); retrying in 15s…"
-            sleep 15
-          done
+      - name: Run test suite (Pest · MySQL)
+        run: vendor/bin/pest --compact

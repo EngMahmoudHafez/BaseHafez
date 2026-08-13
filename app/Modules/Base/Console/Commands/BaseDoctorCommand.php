@@ -4,7 +4,10 @@ namespace App\Modules\Base\Console\Commands;
 
 use App\Support\ModuleDiscovery;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use PDO;
+use Throwable;
 
 /**
  * Environment and structural health check. Run without options for a general
@@ -40,6 +43,7 @@ class BaseDoctorCommand extends Command
         $production = (bool) $this->option('production');
 
         $this->checkKeys();
+        $this->checkDatabase();
         $this->checkModuleContract();
 
         if ($production) {
@@ -68,7 +72,7 @@ class BaseDoctorCommand extends Command
         $this->record(
             filled(config('app.key')) ? self::PASS : self::FAIL,
             'Application key',
-            filled(config('app.key')) ? 'set' : 'missing — run php artisan base:install',
+            filled(config('app.key')) ? 'set' : 'missing — run php artisan base:setup',
         );
 
         $this->record(
@@ -76,6 +80,80 @@ class BaseDoctorCommand extends Command
             'JWT secret',
             filled(config('jwt.secret')) ? 'set' : 'missing — run php artisan jwt:secret',
         );
+    }
+
+    /**
+     * This base is MySQL-official: a non-mysql driver is a hard failure, and the
+     * connection is probed for real so a misconfigured or unreachable database is
+     * surfaced here rather than only when the first query runs.
+     */
+    private function checkDatabase(): void
+    {
+        $driver = config('database.default');
+        $isMysql = $driver === 'mysql';
+
+        $this->record(
+            $isMysql ? self::PASS : self::FAIL,
+            'Database driver',
+            match (true) {
+                $isMysql => 'mysql',
+                is_string($driver) && $driver !== '' => $driver . ' — this base is MySQL-official; set DB_CONNECTION=mysql',
+                default => 'not set — set DB_CONNECTION=mysql',
+            },
+        );
+
+        $host = $this->stringConfig('database.connections.mysql.host');
+        $port = $this->stringConfig('database.connections.mysql.port');
+
+        $this->record(
+            $host !== '' ? self::PASS : self::FAIL,
+            'Database host',
+            match (true) {
+                $host !== '' && $port !== '' => $host . ':' . $port,
+                $host !== '' => $host,
+                default => 'DB_HOST is not set',
+            },
+        );
+
+        try {
+            $pdo = DB::connection()->getPdo();
+            $connectionError = null;
+        } catch (Throwable $exception) {
+            $pdo = null;
+            $connectionError = $exception->getMessage();
+        }
+
+        $this->record(
+            $pdo instanceof PDO ? self::PASS : self::FAIL,
+            'Database connection',
+            $pdo instanceof PDO ? 'connected' : 'cannot connect — ' . $connectionError,
+        );
+
+        $database = $this->stringConfig('database.connections.mysql.database');
+        $this->record(
+            $database !== '' ? self::PASS : self::FAIL,
+            'Database name',
+            $database !== '' ? $database : 'DB_DATABASE is not set',
+        );
+
+        $serverVersion = $pdo instanceof PDO ? $pdo->getAttribute(PDO::ATTR_SERVER_VERSION) : null;
+        $serverVersion = is_scalar($serverVersion) ? (string) $serverVersion : '';
+        $this->record(
+            $serverVersion !== '' ? self::PASS : self::WARN,
+            'MySQL server version',
+            $serverVersion !== '' ? $serverVersion : 'unavailable — no connection',
+        );
+    }
+
+    /**
+     * Read a config value that is expected to be a string, coercing scalars and
+     * treating anything else (null, arrays) as an empty string.
+     */
+    private function stringConfig(string $key): string
+    {
+        $value = config($key);
+
+        return is_scalar($value) ? (string) $value : '';
     }
 
     /**

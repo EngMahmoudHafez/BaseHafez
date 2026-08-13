@@ -2,7 +2,6 @@
 
 namespace App\Modules\Notifications\Http\Resources\V1;
 
-use App\Modules\Auth\Http\Resources\V1\User\UserSummaryResource;
 use App\Modules\Notifications\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -28,7 +27,6 @@ class NotificationResource extends JsonResource
             'read_at' => $this->read_at?->toISOString(),
             'sent_at' => $this->sent_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
-            'user' => $this->whenLoaded('user', fn () => $this->user ? new UserSummaryResource($this->user) : null),
         ];
     }
 

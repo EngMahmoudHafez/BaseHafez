@@ -2,17 +2,17 @@
 
 namespace App\Modules\Notifications\Models;
 
-use App\Modules\Auth\Models\User;
 use App\Modules\Notifications\database\factories\NotificationFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $user_id
+ * @property string $notifiable_type
+ * @property int $notifiable_id
  * @property string $title_ar
  * @property string|null $title_en
  * @property string $body_ar
@@ -28,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read string $title
  * @property-read string $body
- * @property-read User|null $user
+ * @property-read Model $notifiable
  */
 class Notification extends Model
 {
@@ -42,7 +42,8 @@ class Notification extends Model
     public const TYPE_PROMOTION = 'promotion';
 
     protected $fillable = [
-        'user_id',
+        'notifiable_type',
+        'notifiable_id',
         'title_ar',
         'title_en',
         'body_ar',
@@ -71,10 +72,10 @@ class Notification extends Model
         return NotificationFactory::new();
     }
 
-    /** @return BelongsTo<User, $this> */
-    public function user(): BelongsTo
+    /** @return MorphTo<Model, $this> */
+    public function notifiable(): MorphTo
     {
-        return $this->belongsTo(User::class);
+        return $this->morphTo();
     }
 
     /**

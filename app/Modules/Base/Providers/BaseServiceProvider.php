@@ -3,7 +3,7 @@
 namespace App\Modules\Base\Providers;
 
 use App\Modules\Base\Console\Commands\BaseDoctorCommand;
-use App\Modules\Base\Console\Commands\BaseInstallCommand;
+use App\Modules\Base\Console\Commands\BaseSetupCommand;
 use App\Modules\Base\Console\Commands\MakeModuleCommand;
 use App\Modules\Base\Console\Commands\MakeModuleModelCommand;
 use App\Modules\Base\Console\Commands\ModulesListCommand;
@@ -25,7 +25,7 @@ final class BaseServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                BaseInstallCommand::class,
+                BaseSetupCommand::class,
                 BaseDoctorCommand::class,
                 ModulesListCommand::class,
                 MakeModuleCommand::class,

@@ -19,16 +19,16 @@ cd my-project
 composer setup
 ```
 
-`composer setup` is the single, idempotent installer. It installs PHP and npm dependencies, creates `.env`, generates the application key and JWT secret, prepares the database (MySQL by default — edit the `DB_*` block first, or set `DB_CONNECTION=sqlite` for a zero-dependency setup and the installer creates the file for you), links storage, runs migrations and seeders, and builds the frontend. Re-running it is safe. The Laravel-side steps are one command — `php artisan base:install` — which CI (`--ci`) and `composer create-project` also run, so the documented flow and the automation never drift.
+`composer setup` is the single, idempotent installer. It installs PHP and npm dependencies, creates `.env`, generates the application key and JWT secret, validates the MySQL connection (the official database — edit the `DB_*` block first; it does not auto-create the database), links storage, runs migrations and seeders, and builds the frontend. Re-running it is safe. The Laravel-side steps are one command — `php artisan base:setup` — which CI (`--ci`) and `composer create-project` also run, so the documented flow and the automation never drift.
 
-**Using MySQL or PostgreSQL?** Create and edit `.env` first, then run setup — `base:install` leaves an existing `.env` untouched:
+**Using MySQL or PostgreSQL?** Create and edit `.env` first, then run setup — `base:setup` leaves an existing `.env` untouched:
 
 ```bash
 cp .env.example .env      # then set the DB_* block
 composer setup
 ```
 
-To create the first dashboard manager, set `BASE_ADMIN_EMAIL` and a `BASE_ADMIN_PASSWORD` of at least 12 characters in `.env`, then run `php artisan base:install --seed`. Never reuse production credentials in a test environment.
+To create the first dashboard manager, set `BASE_ADMIN_EMAIL` and a `BASE_ADMIN_PASSWORD` of at least 12 characters in `.env`, then run `php artisan base:setup --seed`. Never reuse production credentials in a test environment.
 
 The foundation seeder is repeatable and does not delete existing data. It creates roles, permissions, countries, and generic site content. The first dashboard manager is created only when `BASE_ADMIN_EMAIL` is valid and `BASE_ADMIN_PASSWORD` contains at least 12 characters; otherwise that step is deliberately skipped. Remove those bootstrap credentials from the deployment environment after the account exists.
 

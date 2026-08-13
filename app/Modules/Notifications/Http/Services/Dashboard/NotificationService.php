@@ -26,7 +26,7 @@ class NotificationService
 
     public function index(NotificationIndexRequest $request): View
     {
-        $query = Notification::query()->with('user');
+        $query = Notification::query()->with('notifiable');
 
         $this->applyDashboardFilters(
             $query,
@@ -59,15 +59,14 @@ class NotificationService
 
     public function sendToUser(int $userId, NotificationMessageData $message): Notification
     {
-        $notification = $this->notifications->create($message->forUser($userId));
+        // Dashboard broadcasts target application users (validated to exist).
+        $user = User::query()->findOrFail($userId);
+
+        $notification = $this->notifications->create($message->forNotifiable($user));
 
         // Actually deliver it: push to the recipient's devices (queued FCM) and
         // broadcast on their private channel — not just a database row.
-        $user = User::query()->find($userId);
-
-        if ($user !== null) {
-            $this->pushNotifier->deliverExisting($user, $notification);
-        }
+        $this->pushNotifier->deliverExisting($user, $notification);
 
         return $notification;
     }

@@ -27,9 +27,11 @@ app(PushNotifier::class)->send(
 3. broadcasts a `NotificationSent` event on the private channel
    `notifications.{type}.{id}` (e.g. `notifications.User.42`).
 
-The database record is **user-scoped** (`notifications.user_id`), so `$notifiable`
-must be a `User` or share the `users` table. FCM push and broadcast are polymorphic
-and work for any model that uses the `HasDeviceTokens` trait.
+The database record is **polymorphic** (`notifications.notifiable_type` +
+`notifiable_id`), so any Eloquent model can receive notifications — a `User`, a
+`Manager`, or a project's own `Vendor`/`Driver`/`Customer` — without changing this
+module. FCM push and broadcast additionally require the recipient to use the
+`HasDeviceTokens` trait.
 
 ## Enabling a model
 
@@ -38,7 +40,7 @@ shipped `User` and `Manager` models. Add it the same way on any additional model
 should receive push notifications:
 
 ```php
-use App\Modules\Base\Concerns\HasDeviceTokens;
+use App\Modules\Notifications\Concerns\HasDeviceTokens;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable

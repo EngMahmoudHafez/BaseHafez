@@ -230,6 +230,118 @@ test('models use the casts method not the legacy property', function () {
     }
 });
 
+test('base does not depend on business modules', function () {
+    // Base is the lowest shared layer: it must not reference any business module
+    // (Auth, Notifications, Structure, Settings). Business modules depend on Base,
+    // never the other way around.
+    foreach (['Auth', 'Notifications', 'Structure', 'Settings'] as $module) {
+        foreach (filesIn(base_path('app/Modules/Base'), 'php') as $file) {
+            $path = str_replace('\\', '/', $file->getPathname());
+
+            $this->assertDoesNotMatchRegularExpression(
+                '/App\\\\Modules\\\\' . $module . '\\\\/',
+                file_get_contents($file->getPathname()),
+                "Base file [{$path}] references App\\Modules\\{$module}\\; Base must not depend on business modules.",
+            );
+        }
+    }
+});
+
+test('the notification engine does not depend on auth account models', function () {
+    // Scope: the delivery ENGINE only. It must stay decoupled from who it delivers
+    // to, so it may not import App\Modules\Auth\Models\{User,Manager}. The dashboard
+    // "broadcast to users" admin feature (Http/Services/Dashboard,
+    // Http/Controllers/Dashboard), the NotificationFactory, and the Blade views
+    // legitimately reference the User model and are therefore NOT scanned here.
+    $engineRoots = [
+        'app/Modules/Notifications/Models',
+        'app/Modules/Notifications/Services',
+        'app/Modules/Notifications/Repositories',
+        'app/Modules/Notifications/DTOs',
+        'app/Modules/Notifications/Http/Services/Api',
+        'app/Modules/Notifications/Http/Resources',
+    ];
+
+    foreach ($engineRoots as $root) {
+        foreach (filesIn(base_path($root), 'php') as $file) {
+            $path = str_replace('\\', '/', $file->getPathname());
+
+            $this->assertDoesNotMatchRegularExpression(
+                '/App\\\\Modules\\\\Auth\\\\Models\\\\(User|Manager)\\b/',
+                file_get_contents($file->getPathname()),
+                "Notification engine file [{$path}] references an Auth account model; the engine must not depend on Auth.",
+            );
+        }
+    }
+});
+
+test('the split file traits are not resurrected', function () {
+    // HasImages and FileTrait were merged into InteractsWithFiles.php; the split
+    // must never silently come back.
+    foreach (['HasImages.php', 'FileTrait.php'] as $legacyTrait) {
+        $this->assertFileDoesNotExist(
+            base_path("app/Modules/Base/Concerns/{$legacyTrait}"),
+            "Legacy concern [{$legacyTrait}] is back; it was merged into InteractsWithFiles.php — do not reintroduce the split.",
+        );
+    }
+});
+
+test('the setting model casts show_in_dashboard to a boolean', function () {
+    $model = base_path('app/Modules/Settings/Models/Setting.php');
+
+    expect(is_file($model))->toBeTrue('Settings module is missing its Setting model at app/Modules/Settings/Models/Setting.php.');
+
+    $this->assertMatchesRegularExpression(
+        '/[\'"]show_in_dashboard[\'"]\s*=>\s*[\'"](boolean|bool)[\'"]/',
+        file_get_contents($model),
+        'Setting model must cast show_in_dashboard to a boolean in its casts() method.',
+    );
+});
+
+test('the settings table enforces a unique key', function () {
+    $migrations = filesIn(base_path('app/Modules/Settings/database/migrations'), 'php');
+
+    expect($migrations)->not->toBeEmpty('Settings module is missing its database migrations.');
+
+    $contents = collect($migrations)
+        ->map(fn (SplFileInfo $file): string => file_get_contents($file->getPathname()))
+        ->implode("\n");
+
+    // Accepts either a chained column unique (->string('key')->unique()) or an
+    // explicit index (->unique('key')). A composite unique is intentionally not
+    // accepted: the agreed API requires `key` to be globally unique.
+    $declaresUniqueKey = preg_match('/[\'"]key[\'"][^;]*->\s*unique\s*\(/', $contents) === 1
+        || preg_match('/->\s*unique\s*\(\s*[\'"]key[\'"]/', $contents) === 1;
+
+    expect($declaresUniqueKey)->toBeTrue('The settings migration must declare a unique key column (settings.key must be unique).');
+});
+
+test('the dashboard settings listing is filtered by show_in_dashboard', function () {
+    // The dashboard only lists settings flagged show_in_dashboard = true. Assert the
+    // filter lives in the module's query path (service, repository, or a model scope)
+    // rather than trusting each caller to remember it. Static scan keeps this test in
+    // step with the rest of this pure-static, no-DB architecture file.
+    $queryRoots = [
+        'app/Modules/Settings/Http/Services/Dashboard',
+        'app/Modules/Settings/Repositories',
+        'app/Modules/Settings/Models',
+    ];
+
+    $existingRoots = collect($queryRoots)->filter(fn (string $root): bool => is_dir(base_path($root)));
+
+    expect($existingRoots)->not->toBeEmpty('Settings module is missing its dashboard query layer (service/repository/model).');
+
+    $filtersOnFlag = collect($queryRoots)
+        ->flatMap(fn (string $root): array => filesIn(base_path($root), 'php'))
+        ->map(fn (SplFileInfo $file): string => file_get_contents($file->getPathname()))
+        ->contains(fn (string $file): bool => preg_match(
+            '/where[A-Za-z]*\(\s*[\'"]show_in_dashboard[\'"]|whereShowInDashboard/',
+            $file,
+        ) === 1);
+
+    expect($filtersOnFlag)->toBeTrue("The dashboard settings listing must filter on show_in_dashboard (e.g. where('show_in_dashboard', true)) so hidden settings never leak to the dashboard.");
+});
+
 /**
  * Every module directory under app/Modules, sorted.
  *

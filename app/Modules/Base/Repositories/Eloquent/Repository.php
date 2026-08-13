@@ -2,7 +2,7 @@
 
 namespace App\Modules\Base\Repositories\Eloquent;
 
-use App\Modules\Base\Concerns\FileTrait;
+use App\Modules\Base\Concerns\InteractsWithFiles;
 use App\Modules\Base\Repositories\RepositoryInterface;
 use Closure;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class Repository implements RepositoryInterface
 {
-    use FileTrait;
+    use InteractsWithFiles;
 
     /** @var TModel */
     protected Model $model;

@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('notifications', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->morphs('notifiable');
             $table->string('title_ar');
             $table->string('title_en')->nullable();
             $table->text('body_ar');
@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
 
-            $table->index(['user_id', 'is_read']);
+            $table->index(['notifiable_type', 'notifiable_id', 'is_read'], 'notifications_notifiable_read_idx');
         });
     }
 

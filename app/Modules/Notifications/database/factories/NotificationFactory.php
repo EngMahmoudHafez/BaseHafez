@@ -19,7 +19,8 @@ class NotificationFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'notifiable_type' => User::class,
+            'notifiable_id' => User::factory(),
             'title_ar' => fake()->sentence(),
             'title_en' => fake()->sentence(),
             'body_ar' => fake()->paragraph(),

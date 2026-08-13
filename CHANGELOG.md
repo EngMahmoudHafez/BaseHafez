@@ -11,27 +11,42 @@ see [docs/UPGRADING.md](docs/UPGRADING.md).
 
 ### Added
 
-- `php artisan base:install` — a single, idempotent installer (env file, application and JWT
-  keys, database, storage link, migrate/seed). CI (`--ci`) and `composer setup` both call it, so
-  the documented install flow and the pipeline can no longer drift.
+- `php artisan base:setup` — a single, idempotent installer (env file, application and JWT keys,
+  **validated MySQL connection**, storage link, migrate/seed). CI (`--ci`) and `composer setup` both
+  call it, so the documented install flow and the pipeline can no longer drift. MySQL is the official
+  database — `--ci` requires a reachable MySQL and does not fall back to SQLite or auto-create the DB.
 - `php artisan base:doctor [--production]` — environment and module health check. `--production`
   fails the process on unsafe settings (debug enabled, wildcard CORS, leftover or weak bootstrap admin
   credentials, `sync` queue, log/array mail, a non-HTTPS/localhost `APP_URL`) and warns on an insecure
   session cookie, so it can gate a deploy.
 - `php artisan base:modules` — lists discovered modules with their provider, seeders, and route
   files, and flags any module that is present but not loaded.
-- MySQL 8 integration job in CI, running the suite against the production-grade database in
-  addition to the fast in-memory SQLite suite.
+- A **`Settings` module** — generic key/value configuration (`SettingsService::get/set/has/forget`,
+  cached under `settings.all` and invalidated on write) with a dashboard editor gated by
+  `settings-read`/`settings-update`. The base ships no business values — projects seed their own.
 - `.nvmrc` and a `package.json` `engines` field pin Node 22.
-- A forward-looking, non-blocking PHP 8.5 entry in the test matrix so the `^8.3` constraint is
-  exercised across every version it allows.
 
 ### Changed
 
+- **MySQL is the official database.** Tests, CI, and `base:setup` are MySQL-first: the SQLite test
+  matrix and the experimental PHP 8.5 CI entry were removed, CI is simplified to **Quality + Tests
+  (PHP 8.3/8.4 · MySQL)**, and `phpunit.xml` forces a dedicated `*test*` database (a `TestCase` guard
+  refuses to run against any non-test database). `base:install` was renamed to **`base:setup`** and
+  the test runner is now `vendor/bin/pest`.
+- **Notifications are polymorphic** — `notifications.user_id` became `notifiable_type`/`notifiable_id`
+  (`MorphTo`), so any Eloquent model (User, Manager, or a project's Vendor/Driver/Customer) can receive
+  them. The notification engine no longer imports `Auth\Models\User`; the dashboard broadcast-to-users
+  admin feature still targets users. Enforced by `FoundationArchitectureTest`.
+- **File handling consolidated** into one `InteractsWithFiles` concern (merging `HasImages` +
+  `FileTrait`, with a single `optimizeImage`). `HasDeviceTokens` moved from `Base` to `Notifications`,
+  removing a `Base → Notifications` dependency inversion.
+- **Static analysis raised to PHPStan level 8 with no baseline** (previously level 5 with a 23-entry
+  baseline); the base `Repository` is now generic (`@template TModel`).
 - `FoundationArchitectureTest` now enforces the module **contract** (StudlyCase name, a
   discoverable service provider, canonical surface paths) instead of a fixed whitelist of module
-  names. New modules are allowed as long as they conform, and a module that is present but not
-  loaded fails loudly.
+  names, plus new **boundary guards** (Base isolation, notification-engine independence, no resurrected
+  file traits, Settings invariants). New modules are allowed as long as they conform, and a module that
+  is present but not loaded fails loudly.
 - CI upgraded to `actions/checkout@v7` and `actions/setup-node@v7`; Node is read from `.nvmrc`.
 - Dependency audits are blocking and network-resilient: `composer audit` and
   `npm audit --omit=dev --audit-level=high` no longer pass silently on failure (the previous

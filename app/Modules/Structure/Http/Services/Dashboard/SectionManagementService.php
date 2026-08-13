@@ -2,7 +2,7 @@
 
 namespace App\Modules\Structure\Http\Services\Dashboard;
 
-use App\Modules\Base\Concerns\FileTrait;
+use App\Modules\Base\Concerns\InteractsWithFiles;
 use App\Modules\Structure\Http\Requests\Dashboard\SectionRequest;
 use App\Modules\Structure\Repositories\StructureRepositoryInterface;
 use App\Modules\Structure\Support\SectionRegistry;
@@ -17,7 +17,7 @@ use Throwable;
  */
 class SectionManagementService
 {
-    use FileTrait;
+    use InteractsWithFiles;
 
     public function __construct(
         private readonly StructureRepositoryInterface $structures,
@@ -108,7 +108,7 @@ class SectionManagementService
             return $existing;
         }
 
-        $path = $this->image($upload, "content/{$key}");
+        $path = $this->storeImage($upload, "content/{$key}");
         $newFiles[] = $path;
 
         $oldPath = $this->publicStoragePath($key, $existing);

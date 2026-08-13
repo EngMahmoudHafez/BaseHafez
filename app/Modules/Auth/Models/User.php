@@ -4,8 +4,8 @@ namespace App\Modules\Auth\Models;
 
 use App\Modules\Auth\database\factories\UserFactory;
 use App\Modules\Auth\Enums\UserStatus;
-use App\Modules\Base\Concerns\HasDeviceTokens;
-use App\Modules\Base\Concerns\HasImages;
+use App\Modules\Base\Concerns\InteractsWithFiles;
+use App\Modules\Notifications\Concerns\HasDeviceTokens;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,7 +37,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
-    use HasDeviceTokens, HasFactory, HasImages, Notifiable;
+    use HasDeviceTokens, HasFactory, InteractsWithFiles, Notifiable;
 
     protected $fillable = [
         'country_id',

@@ -17,10 +17,10 @@ use Illuminate\Database\Eloquent\Model;
  *
  *     app(PushNotifier::class)->send($user, 'Welcome', 'Thanks for joining', ['order_id' => 42]);
  *
- * The database record is user-scoped (it reuses the existing `notifications` table,
- * keyed by `user_id`), so `$notifiable` must be a User or share the `users` table.
- * Device push and broadcast are polymorphic and work for any notifiable that uses
- * the HasDeviceTokens trait.
+ * The database record is polymorphic (`notifiable_type` + `notifiable_id`), so any
+ * Eloquent model can receive notifications — a User, a Manager, or a project's own
+ * Vendor/Driver/Customer — without changing this module. Device push and broadcast
+ * additionally require the recipient to use the HasDeviceTokens trait.
  */
 class PushNotifier
 {
@@ -63,18 +63,7 @@ class PushNotifier
      */
     private function storeNotification(Model $notifiable, string $title, string $body, array $data, string $type): Notification
     {
-        // The notifications table is user-scoped (user_id FK to users). Filing a
-        // record for a model on another table would collide with a same-id User or
-        // violate the FK — fail fast instead of silently mis-filing it.
-        if ($notifiable->getTable() !== 'users') {
-            throw new \InvalidArgumentException(
-                'PushNotifier persists to the user-scoped notifications table; $notifiable must live on the users table, got '
-                . $notifiable::class . ' (' . $notifiable->getTable() . ').',
-            );
-        }
-
-        return Notification::create([
-            'user_id' => $notifiable->getKey(),
+        $notification = new Notification([
             'title_ar' => $title,
             'title_en' => $title,
             'body_ar' => $body,
@@ -83,6 +72,11 @@ class PushNotifier
             'data' => $data === [] ? null : $data,
             'sent_at' => now(),
         ]);
+
+        $notification->notifiable()->associate($notifiable);
+        $notification->save();
+
+        return $notification;
     }
 
     /**

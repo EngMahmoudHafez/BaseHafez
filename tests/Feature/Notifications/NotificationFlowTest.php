@@ -17,8 +17,15 @@ test('broadcast targets only active users', function () {
     $notifications = app(NotificationService::class)->sendToAllUsers(message());
 
     expect($notifications)->toHaveCount(1);
-    $this->assertDatabaseHas('notifications', ['user_id' => $activeUser->id, 'title_en' => 'Welcome']);
-    $this->assertDatabaseMissing('notifications', ['user_id' => $blockedUser->id]);
+    $this->assertDatabaseHas('notifications', [
+        'notifiable_type' => $activeUser->getMorphClass(),
+        'notifiable_id' => $activeUser->id,
+        'title_en' => 'Welcome',
+    ]);
+    $this->assertDatabaseMissing('notifications', [
+        'notifiable_type' => $blockedUser->getMorphClass(),
+        'notifiable_id' => $blockedUser->id,
+    ]);
 });
 
 test('api lists and updates only the authenticated users notifications', function () {

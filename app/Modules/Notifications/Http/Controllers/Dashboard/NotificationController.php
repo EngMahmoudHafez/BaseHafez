@@ -53,7 +53,7 @@ class NotificationController extends Controller implements HasMiddleware
 
     public function show(Notification $notification): View
     {
-        $notification->load('user');
+        $notification->load('notifiable');
 
         return view('notifications::dashboard.show', compact('notification'));
     }

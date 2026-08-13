@@ -32,7 +32,11 @@ test('dashboard sendToUser pushes to devices and broadcasts, not only a database
 
     $notification = app(NotificationService::class)->sendToUser($user->id, dashboardMessage());
 
-    $this->assertDatabaseHas('notifications', ['id' => $notification->id, 'user_id' => $user->id]);
+    $this->assertDatabaseHas('notifications', [
+        'id' => $notification->id,
+        'notifiable_type' => $user->getMorphClass(),
+        'notifiable_id' => $user->id,
+    ]);
     NotificationFacade::assertSentTo($user, PushNotification::class);
     Event::assertDispatched(
         NotificationSent::class,
@@ -40,9 +44,19 @@ test('dashboard sendToUser pushes to devices and broadcasts, not only a database
     );
 });
 
-test('push notifier refuses a notifiable outside the users table (no cross-table collision)', function () {
+test('push notifier files a polymorphic notification for any notifiable model', function () {
+    Event::fake([NotificationSent::class]);
+    NotificationFacade::fake();
+
+    // A Manager (not on the users table) can receive notifications now that the
+    // record is polymorphic — no cross-table collision, no users-table coupling.
     $manager = Manager::factory()->create();
 
-    expect(fn () => app(PushNotifier::class)->send($manager, 'Hi', 'Body'))
-        ->toThrow(InvalidArgumentException::class);
+    $notification = app(PushNotifier::class)->send($manager, 'Hi', 'Body');
+
+    $this->assertDatabaseHas('notifications', [
+        'id' => $notification->id,
+        'notifiable_type' => $manager->getMorphClass(),
+        'notifiable_id' => $manager->getKey(),
+    ]);
 });

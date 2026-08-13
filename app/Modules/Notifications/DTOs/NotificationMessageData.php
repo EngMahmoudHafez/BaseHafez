@@ -3,6 +3,7 @@
 namespace App\Modules\Notifications\DTOs;
 
 use App\Modules\Notifications\Models\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 readonly class NotificationMessageData
 {
@@ -34,10 +35,11 @@ readonly class NotificationMessageData
     }
 
     /** @return array<string, mixed> */
-    public function forUser(int $userId): array
+    public function forNotifiable(Model $notifiable): array
     {
         return [
-            'user_id' => $userId,
+            'notifiable_type' => $notifiable->getMorphClass(),
+            'notifiable_id' => $notifiable->getKey(),
             'title_ar' => $this->titleAr,
             'title_en' => $this->titleEn,
             'body_ar' => $this->bodyAr,

@@ -3,7 +3,7 @@
 namespace Tests\Fixtures;
 
 use App\Modules\Auth\Models\User;
-use App\Modules\Base\Concerns\HasDeviceTokens;
+use App\Modules\Notifications\Concerns\HasDeviceTokens;
 
 /**
  * A User that opts into device-token registration. Used to exercise the
