@@ -15,7 +15,7 @@
         "@popperjs/core": "2.11.8",
         "@simonwep/pickr": "1.9.1",
         "@yaireo/tagify": "4.38.0",
-        "apexcharts": "4.2.0",
+        "apexcharts": "6.8.0",
         "bootstrap": "5.3.6",
         "cleave-zen": "0.0.17",
         "flatpickr": "4.6.13",
