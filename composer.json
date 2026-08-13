@@ -13,7 +13,7 @@
     "php": "^8.3",
     "ezyang/htmlpurifier": "^4.17",
     "giggsey/libphonenumber-for-php": "^9.0",
-    "intervention/image": "^3.8",
+    "intervention/image": "^4.2",
     "laravel/framework": "^13.0",
     "laravel/tinker": "^3.0",
     "mcamara/laravel-localization": "^2.0",
