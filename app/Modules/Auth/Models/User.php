@@ -36,6 +36,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  */
 class User extends Authenticatable implements JWTSubject
 {
+    /** @use HasFactory<UserFactory> */
     use HasDeviceTokens, HasFactory, HasImages, Notifiable;
 
     protected $fillable = [
@@ -85,6 +86,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    /** @return array<string, mixed> */
     public function getJWTCustomClaims(): array
     {
         return ['tv' => $this->tokenVersion()];
@@ -109,11 +111,13 @@ class User extends Authenticatable implements JWTSubject
         return JWTAuth::fromUser($this);
     }
 
+    /** @return BelongsTo<Country, $this> */
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'country_id');
     }
 
+    /** @return HasMany<AuthOtp, $this> */
     public function authOtps(): HasMany
     {
         return $this->hasMany(AuthOtp::class, 'user_id');

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Auth\Http\Requests\Dashboard\Role;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -12,6 +13,9 @@ class RoleRequest extends FormRequest
         return auth('manager')->check();
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

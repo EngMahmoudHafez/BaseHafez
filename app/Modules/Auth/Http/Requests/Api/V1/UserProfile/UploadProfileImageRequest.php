@@ -2,6 +2,7 @@
 
 namespace App\Modules\Auth\Http\Requests\Api\V1\UserProfile;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UploadProfileImageRequest extends FormRequest
@@ -23,6 +24,9 @@ class UploadProfileImageRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     */
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {

@@ -10,11 +10,13 @@ class NotificationCollection extends ResourceCollection
 {
     public $collects = NotificationResource::class;
 
+    /** @return array<int, mixed> */
     public function toArray(Request $request): array
     {
-        return $this->collection->toArray();
+        return $this->collection?->toArray() ?? [];
     }
 
+    /** @return array<string, mixed> */
     public function with(Request $request): array
     {
         if (! $this->resource instanceof LengthAwarePaginator) {

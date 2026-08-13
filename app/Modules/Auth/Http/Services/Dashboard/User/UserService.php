@@ -110,8 +110,10 @@ class UserService
         );
     }
 
+    /** @return Builder<User> */
     private function filteredUsers(Request $request): Builder
     {
+        /** @var Builder<User> $query */
         $query = $this->userRepository->query();
 
         $this->applyDashboardFilters(
@@ -139,6 +141,7 @@ class UserService
         ];
     }
 
+    /** @param iterable<int, User> $users */
     private function writeCsv(iterable $users): void
     {
         $stream = fopen('php://output', 'wb');

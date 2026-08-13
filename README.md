@@ -103,7 +103,7 @@ git merge vX.Y.Z
 | **Laravel Boost** | Version-aware Laravel docs (`search-docs`) and `record-rule` via MCP (`.mcp.json`). |
 | **`.ai/rules/`** | Path-scoped project rules the AI must follow (committed). |
 | **Review skills** (`.claude/skills/`) | `laravel-guard`, `laravel-modernizer`, `blade-dashboard-review`, plus `clean-code-guard`, `test-guard`, `docs-guard`. |
-| **Larastan** | Static analysis (`phpstan.neon`, `phpstan-baseline.neon`). |
+| **Larastan** | Static analysis via `phpstan.neon` — no baseline (fix the type, never suppress). Target level is set in that file. |
 | **Pint** | Formatting for PHP (Blade is hand-formatted). |
 | **Telescope** | Local-only dev observability (excluded from auto-discovery; registered only in `local`). |
 | **CI + Dependabot** | `.github/workflows/ci.yml` runs the gates; weekly dependency updates. |

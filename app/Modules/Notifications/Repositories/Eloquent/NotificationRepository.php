@@ -11,11 +11,13 @@ class NotificationRepository implements NotificationRepositoryInterface
 {
     public function __construct(private readonly Notification $model) {}
 
+    /** @param array<string, mixed> $attributes */
     public function create(array $attributes): Notification
     {
         return $this->model->newQuery()->create($attributes);
     }
 
+    /** @return LengthAwarePaginator<int, Notification> */
     public function paginateForUser(int $userId, int $perPage): LengthAwarePaginator
     {
         return $this->model->newQuery()
@@ -28,6 +30,8 @@ class NotificationRepository implements NotificationRepositoryInterface
      * The latest unread notifications, bounded so a user who never reads them
      * cannot make this endpoint materialize an unbounded set. Use the paginated
      * index or countUnreadForUser() for the exact total.
+     *
+     * @return Collection<int, Notification>
      */
     public function unreadForUser(int $userId): Collection
     {

@@ -1,6 +1,11 @@
 <?php
 
 if (! function_exists('array_merge_recursive_distinct')) {
+    /**
+     * @param  array<string, mixed>  $base
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
     function array_merge_recursive_distinct(array $base, array $overrides): array
     {
         foreach ($overrides as $key => $value) {

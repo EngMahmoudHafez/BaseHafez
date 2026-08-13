@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  */
 class Structure extends Model
 {
+    /** @use HasFactory<StructureFactory> */
     use HasFactory;
 
     protected $table = 'structures';

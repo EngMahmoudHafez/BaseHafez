@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface NotificationRepositoryInterface
 {
+    /** @param array<string, mixed> $attributes */
     public function create(array $attributes): Notification;
 
+    /** @return LengthAwarePaginator<int, Notification> */
     public function paginateForUser(int $userId, int $perPage): LengthAwarePaginator;
 
+    /** @return Collection<int, Notification> */
     public function unreadForUser(int $userId): Collection;
 
     public function findForUserOrFail(int $userId, int $notificationId): Notification;

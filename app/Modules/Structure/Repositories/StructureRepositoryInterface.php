@@ -9,5 +9,6 @@ interface StructureRepositoryInterface extends RepositoryInterface
 {
     public function structure(string $key): ?Structure;
 
+    /** @param array<string, mixed> $content */
     public function publish(string $key, array $content): Structure;
 }

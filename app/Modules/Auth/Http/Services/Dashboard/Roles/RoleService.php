@@ -4,6 +4,7 @@ namespace App\Modules\Auth\Http\Services\Dashboard\Roles;
 
 use App\Modules\Auth\Enums\RoleName;
 use App\Modules\Auth\Http\Requests\Dashboard\Role\RoleRequest;
+use App\Modules\Auth\Models\Permission;
 use App\Modules\Auth\Models\Role;
 use App\Modules\Auth\Repositories\PermissionRepositoryInterface;
 use App\Modules\Auth\Repositories\RoleRepositoryInterface;
@@ -108,6 +109,7 @@ class RoleService
         return to_route('managers.index', ['role' => $this->role($id)->name]);
     }
 
+    /** @return array<string, mixed> */
     private function roleData(RoleRequest $request): array
     {
         $data = $request->validated();
@@ -121,12 +123,10 @@ class RoleService
         ];
     }
 
+    /** @param array<int, string> $relations */
     private function role(int $id, array $relations = []): Role
     {
-        /** @var Role $role */
-        $role = $this->roles->getById($id, relations: $relations);
-
-        return $role;
+        return $this->roles->getById($id, relations: $relations);
     }
 
     /**
@@ -152,10 +152,16 @@ class RoleService
         }
     }
 
-    /** @return array{permissionActions: array<int, string>, permissionGroups: Collection<string, array<string, mixed>>} */
+    /** @return array{permissionActions: array<int, string>, permissionGroups: Collection<int|string, array<string, mixed>>} */
     private function permissionFormData(): array
     {
-        $groups = $this->permissions->getAll()
+        /** @var Collection<int, Permission> $all */
+        $all = $this->permissions->getAll();
+
+        // Collection's TValue is declared invariant, so the precise per-group
+        // shape produced below is widened to the documented array<string, mixed>.
+        /** @var Collection<int|string, array<string, mixed>> $groups */
+        $groups = $all
             ->groupBy(fn ($permission): string => Str::beforeLast($permission->name, '-'))
             ->map(function (Collection $permissions, string $module): array {
                 $byAction = $permissions->keyBy(fn ($permission): string => Str::afterLast($permission->name, '-'));

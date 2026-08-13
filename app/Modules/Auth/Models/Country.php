@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  */
 class Country extends Model
 {
+    /** @use HasFactory<CountryFactory> */
     use HasFactory;
 
     protected $table = 'countries';

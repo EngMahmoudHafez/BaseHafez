@@ -6,6 +6,7 @@ use App\Modules\Notifications\Models\Notification;
 
 readonly class NotificationMessageData
 {
+    /** @param array<string, mixed>|null $data */
     public function __construct(
         public string $titleAr,
         public string $titleEn,
@@ -17,6 +18,7 @@ readonly class NotificationMessageData
         public ?string $icon = null,
     ) {}
 
+    /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -31,6 +33,7 @@ readonly class NotificationMessageData
         );
     }
 
+    /** @return array<string, mixed> */
     public function forUser(int $userId): array
     {
         return [

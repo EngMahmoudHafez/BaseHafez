@@ -46,7 +46,7 @@
                 defaultShowDropdownOnHover: "{{ $configData['showDropdownOnHover'] }}",
                 displayCustomizer: "{{ $configData['displayCustomizer'] }}",
                 lang: '{{ app()->getLocale() }}',
-                'controls': <?php echo json_encode($configData['customizerControls']); ?>,
+                'controls': @js($configData['customizerControls']),
               });
 
               // Ensure color is applied on page load

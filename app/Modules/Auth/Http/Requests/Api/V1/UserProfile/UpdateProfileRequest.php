@@ -5,6 +5,7 @@ namespace App\Modules\Auth\Http\Requests\Api\V1\UserProfile;
 use App\Modules\Auth\Models\User;
 use App\Modules\Auth\Rules\PhoneMatchesCountryCode;
 use App\Support\PersonalName;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProfileRequest extends FormRequest
@@ -42,10 +43,18 @@ class UpdateProfileRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        $userId = $this->user()->id;
+        $user = $this->user();
+
+        if ($user === null) {
+            return [];
+        }
+
+        $userId = $user->id;
 
         return [
             'name' => ['sometimes', 'string', 'max:255'],
@@ -71,7 +80,7 @@ class UpdateProfileRequest extends FormRequest
                     }
                 },
             ],
-            'email' => ['sometimes', 'nullable', 'email', 'max:180', 'unique:users,email,' . $this->user()->id],
+            'email' => ['sometimes', 'nullable', 'email', 'max:180', 'unique:users,email,' . $userId],
             'profile_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
         ];
     }

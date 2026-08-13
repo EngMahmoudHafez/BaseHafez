@@ -164,8 +164,10 @@ class ManagerService
         );
     }
 
+    /** @return Builder<Manager> */
     private function filteredQuery(Request $request): Builder
     {
+        /** @var Builder<Manager> $query */
         $query = $this->managers->query();
 
         $this->applyDashboardFilters(
@@ -181,6 +183,7 @@ class ManagerService
         return $query;
     }
 
+    /** @return array<string, mixed> */
     private function formOptions(): array
     {
         return [
@@ -252,6 +255,7 @@ class ManagerService
         }
     }
 
+    /** @param iterable<int, Manager> $managers */
     private function writeCsv(iterable $managers): void
     {
         $stream = fopen('php://output', 'wb');

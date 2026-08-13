@@ -13,11 +13,13 @@ class UserNotificationService
         private readonly NotificationRepositoryInterface $notifications,
     ) {}
 
+    /** @return LengthAwarePaginator<int, Notification> */
     public function paginate(int $userId, int $perPage): LengthAwarePaginator
     {
         return $this->notifications->paginateForUser($userId, $perPage);
     }
 
+    /** @return Collection<int, Notification> */
     public function unread(int $userId): Collection
     {
         return $this->notifications->unreadForUser($userId);

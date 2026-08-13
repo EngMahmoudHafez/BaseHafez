@@ -52,7 +52,7 @@ class FcmChannel
             return [];
         }
 
-        return collect($tokens)
+        return collect(is_iterable($tokens) ? $tokens : [])
             ->filter(static fn (mixed $token): bool => is_string($token) && $token !== '')
             ->unique()
             ->values()

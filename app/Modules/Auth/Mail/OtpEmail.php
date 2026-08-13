@@ -37,10 +37,6 @@ class OtpEmail extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
-        if (! view()->exists('auth::emails.otp')) {
-            view()->addNamespace('auth', base_path('app/Modules/Auth/Resources/views'));
-        }
-
         return new Content(
             view: 'auth::emails.otp',
             with: [

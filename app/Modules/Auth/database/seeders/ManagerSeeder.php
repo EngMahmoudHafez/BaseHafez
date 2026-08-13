@@ -19,13 +19,13 @@ class ManagerSeeder extends Seeder
         $password = config('foundation.admin.password');
 
         if (! is_string($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->command?->warn('Skipping manager creation: BASE_ADMIN_EMAIL is not configured.');
+            $this->command->warn('Skipping manager creation: BASE_ADMIN_EMAIL is not configured.');
 
             return;
         }
 
         if (! is_string($password) || mb_strlen($password) < 12) {
-            $this->command?->warn('Skipping manager creation: BASE_ADMIN_PASSWORD must contain at least 12 characters.');
+            $this->command->warn('Skipping manager creation: BASE_ADMIN_PASSWORD must contain at least 12 characters.');
 
             return;
         }

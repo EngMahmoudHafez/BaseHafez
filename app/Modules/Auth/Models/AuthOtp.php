@@ -21,11 +21,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $verified_at
  * @property int $attempts
  * @property Carbon|null $created_at
- * @property-read User $user
+ * @property-read User|null $user
  * @property-read Country|null $country
  */
 class AuthOtp extends Model
 {
+    /** @use HasFactory<AuthOtpFactory> */
     use HasFactory;
 
     protected $table = 'auth_otps';
@@ -58,11 +59,13 @@ class AuthOtp extends Model
         return AuthOtpFactory::new();
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /** @return BelongsTo<Country, $this> */
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'country_id');

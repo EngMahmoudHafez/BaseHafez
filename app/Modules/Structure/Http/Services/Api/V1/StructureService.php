@@ -27,9 +27,10 @@ class StructureService
         return ApiResponse::success(data: $data);
     }
 
+    /** @return array<string, mixed> */
     public function content(string $key): array
     {
-        $content = $this->structures->structure($key)?->content ?? [];
+        $content = $this->structures->structure($key)->content ?? [];
 
         return $content[app()->getLocale()] ?? $content['ar'] ?? $content['en'] ?? [];
     }

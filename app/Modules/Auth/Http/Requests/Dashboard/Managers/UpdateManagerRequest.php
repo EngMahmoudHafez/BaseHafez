@@ -6,6 +6,7 @@ use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Models\Manager;
 use App\Modules\Auth\Rules\AssignableRole;
 use App\Modules\Auth\Rules\Phone;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,6 +17,9 @@ class UpdateManagerRequest extends FormRequest
         return auth('manager')->check();
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         $manager = $this->route('manager');

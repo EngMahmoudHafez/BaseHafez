@@ -14,6 +14,7 @@ final class PersonalName
         return $name !== '' ? $name : null;
     }
 
+    /** @return array{string|null, string|null} */
     public static function split(?string $fullName): array
     {
         $name = self::normalizePart($fullName);

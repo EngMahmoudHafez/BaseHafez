@@ -2,6 +2,7 @@
 
 namespace App\Modules\Auth\Http\Requests\Dashboard\Managers;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateManagerPasswordRequest extends FormRequest
@@ -11,6 +12,9 @@ class UpdateManagerPasswordRequest extends FormRequest
         return auth('manager')->check();
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

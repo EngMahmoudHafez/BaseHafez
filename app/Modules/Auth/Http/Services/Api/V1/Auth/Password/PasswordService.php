@@ -34,7 +34,7 @@ class PasswordService
         $otp = $user ? $this->otpService->issueEmail($user, self::OTP_PURPOSE) : null;
 
         $data = [
-            'otp_token' => $otp?->token ?? Str::random(64),
+            'otp_token' => $otp->token ?? Str::random(64),
             'expires_in_minutes' => 5,
         ];
 

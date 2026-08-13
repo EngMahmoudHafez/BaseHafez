@@ -27,6 +27,7 @@ class UserProfileService
         );
     }
 
+    /** @param array<string, mixed> $validatedInput */
     public function updateProfile(
         int $userId,
         array $validatedInput,
@@ -65,6 +66,10 @@ class UserProfileService
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
     private function normalizePhone(array $attributes): array
     {
         if (! isset($attributes['phone'], $attributes['country_code'])) {

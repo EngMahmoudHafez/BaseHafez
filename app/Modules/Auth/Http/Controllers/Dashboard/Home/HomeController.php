@@ -16,6 +16,10 @@ class HomeController extends Controller
     {
         $manager = auth('manager')->user();
 
+        if ($manager === null) {
+            abort(403);
+        }
+
         return view('auth::dashboard.home', $this->dashboardDataService->statistics($manager));
     }
 }

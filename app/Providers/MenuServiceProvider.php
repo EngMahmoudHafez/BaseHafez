@@ -21,6 +21,10 @@ class MenuServiceProvider extends ServiceProvider
     {
         $menuJson = file_get_contents(resource_path("menu/{$fileName}"));
 
+        if ($menuJson === false) {
+            throw new \RuntimeException("Unable to read menu file: {$fileName}");
+        }
+
         return json_decode($menuJson, flags: JSON_THROW_ON_ERROR);
     }
 }

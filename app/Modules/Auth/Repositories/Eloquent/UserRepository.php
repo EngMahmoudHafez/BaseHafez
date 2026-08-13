@@ -7,47 +7,52 @@ use App\Modules\Auth\Models\User;
 use App\Modules\Auth\Repositories\UserRepositoryInterface;
 use App\Modules\Base\Repositories\Eloquent\Repository;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends Repository<User>
+ */
 class UserRepository extends Repository implements UserRepositoryInterface
 {
-    protected Model $model;
-
     public function __construct(User $model)
     {
         parent::__construct($model);
     }
 
+    /** @param array<string, mixed> $payload */
     public function create(array $payload): User
     {
-        return $this->model->newQuery()->create($payload)->fresh();
+        return parent::create($payload);
     }
 
+    /**
+     * @param  array<int, string>  $columns
+     * @param  array<int, string>  $relations
+     * @param  array<int, string>  $appends
+     */
     public function getById(
         int|string $modelId,
         array $columns = ['*'],
         array $relations = [],
         array $appends = [],
     ): User {
-        return $this->model->newQuery()
-            ->select($columns)
-            ->with($relations)
-            ->findOrFail($modelId)
-            ->append($appends);
+        return parent::getById($modelId, $columns, $relations, $appends);
     }
 
+    /** @return Builder<User> */
     public function getActiveUsers(): Builder
     {
-        return $this->model::query()->where('status', UserStatus::Active->value);
+        return $this->query()->where('status', UserStatus::Active->value);
     }
 
+    /** @param array<int, string> $relations */
     public function findByPhone(string $phone, array $relations = []): ?User
     {
-        return $this->model::with($relations)->where('phone', $phone)->first();
+        return $this->query()->with($relations)->where('phone', $phone)->first();
     }
 
+    /** @param array<int, string> $relations */
     public function findByEmail(string $email, array $relations = []): ?User
     {
-        return $this->model::with($relations)->where('email', $email)->first();
+        return $this->query()->with($relations)->where('email', $email)->first();
     }
 }

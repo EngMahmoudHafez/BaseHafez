@@ -25,7 +25,7 @@ class SectionManagementService
 
     public function index(string $key): View
     {
-        $stored = $this->structures->structure($key)?->content ?? [];
+        $stored = $this->structures->structure($key)->content ?? [];
         $content = ['all' => $this->sharedContent($key, $stored)];
 
         foreach (SectionRegistry::locales() as $locale) {

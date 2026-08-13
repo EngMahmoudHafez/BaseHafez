@@ -62,7 +62,7 @@ class AuthService extends PlatformService
             ]);
 
             return ApiResponse::success(Http::CREATED, __('messages.created successfully'), [
-                'user' => $this->accountService->userPayload($user->fresh(), $otp->token),
+                'user' => $this->accountService->userPayload($user->refresh(), $otp->token),
                 'otp_token' => $otp->token,
                 'expires_in_minutes' => 5,
                 'verification' => $this->verificationPayload($otp),
@@ -113,7 +113,7 @@ class AuthService extends PlatformService
         ]);
 
         return ApiResponse::success(Http::OK, __('messages.Login verified successfully'), [
-            'user' => $this->accountService->userPayload($user->fresh(), token: $token),
+            'user' => $this->accountService->userPayload($user->refresh(), token: $token),
             'token' => $token,
         ]);
     }
@@ -163,7 +163,7 @@ class AuthService extends PlatformService
         ]);
 
         return ApiResponse::success(Http::CREATED, __('messages.OTP_Is_Send'), [
-            'user' => $this->accountService->userPayload($user->fresh(), $otp->token),
+            'user' => $this->accountService->userPayload($user->refresh(), $otp->token),
             'otp_token' => $otp->token,
             'expires_in_minutes' => 5,
             'verification' => $this->verificationPayload($otp),
@@ -174,7 +174,7 @@ class AuthService extends PlatformService
     {
         $user = auth('api')->user();
 
-        JWTAuth::invalidate(JWTAuth::getToken());
+        JWTAuth::parseToken()->invalidate();
 
         if ($user) {
             Log::info('User signed out successfully', [
@@ -198,6 +198,7 @@ class AuthService extends PlatformService
         return null;
     }
 
+    /** @param array<string, mixed> $verificationInput */
     private function otpIdentityMatchesAuthUser(array $verificationInput, User $user): bool
     {
         $submittedIdentity = $verificationInput['whatsapp']
@@ -213,6 +214,7 @@ class AuthService extends PlatformService
         return in_array($submittedIdentity, [$user->whatsapp, $user->email, $user->phone], true);
     }
 
+    /** @return array<string, mixed> */
     private function verificationPayload(AuthOtp $otp): array
     {
         $payload = [

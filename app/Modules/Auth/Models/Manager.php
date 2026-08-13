@@ -38,11 +38,14 @@ use Laratrust\Traits\HasRolesAndPermissions;
  */
 class Manager extends Authenticatable implements LaratrustUser
 {
+    /** @use HasFactory<ManagerFactory> */
     use HasDeviceTokens, HasFactory, HasImages, Notifiable;
+
     use HasRolesAndPermissions {
         hasPermission as laratrustHasPermission;
     }
 
+    /** @var string */
     protected $guard = 'manager';
 
     protected $fillable = [
@@ -90,6 +93,7 @@ class Manager extends Authenticatable implements LaratrustUser
         );
     }
 
+    /** @return MorphToMany<Permission, $this> */
     public function permissions(): MorphToMany
     {
         return $this->morphToMany(
@@ -101,6 +105,7 @@ class Manager extends Authenticatable implements LaratrustUser
         );
     }
 
+    /** @return BelongsTo<Country, $this> */
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'country_id');
@@ -139,6 +144,9 @@ class Manager extends Authenticatable implements LaratrustUser
         return $this->highestRank() > $target->highestRank();
     }
 
+    /**
+     * @param  string|array<int, string>|\BackedEnum  $permission
+     */
     public function hasPermission(
         string|array|\BackedEnum $permission,
         mixed $team = null,
@@ -157,10 +165,6 @@ class Manager extends Authenticatable implements LaratrustUser
 
     public function isActiveAccount(): bool
     {
-        $status = $this->status instanceof UserStatus
-            ? $this->status->value
-            : (string) $this->status;
-
-        return $status === UserStatus::Active->value;
+        return $this->status === UserStatus::Active;
     }
 }

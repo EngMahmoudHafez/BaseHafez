@@ -28,10 +28,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read string $title
  * @property-read string $body
- * @property-read User $user
+ * @property-read User|null $user
  */
 class Notification extends Model
 {
+    /** @use HasFactory<NotificationFactory> */
     use HasFactory;
 
     public const TYPE_GENERAL = 'general';
@@ -70,16 +71,25 @@ class Notification extends Model
         return NotificationFactory::new();
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @param  Builder<Notification>  $query
+     * @return Builder<Notification>
+     */
     public function scopeUnread(Builder $query): Builder
     {
         return $query->where('is_read', false);
     }
 
+    /**
+     * @param  Builder<Notification>  $query
+     * @return Builder<Notification>
+     */
     public function scopeOfType(Builder $query, string $type): Builder
     {
         return $query->where('type', $type);
@@ -111,6 +121,7 @@ class Notification extends Model
         return $this;
     }
 
+    /** @return array<string, string> */
     public static function getTypes(): array
     {
         return [

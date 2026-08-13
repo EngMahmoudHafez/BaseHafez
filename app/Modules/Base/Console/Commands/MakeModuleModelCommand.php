@@ -207,6 +207,7 @@ PHP
         $this->line('Registered seeder: database/seeders/DatabaseSeeder.php');
     }
 
+    /** @param array<string, string> $extra */
     private function replace(string $stub, array $extra = []): string
     {
         $values = [
@@ -355,6 +356,9 @@ use App\Modules\Base\Repositories\Eloquent\Repository;
 use App\Modules\{{ module }}\Models\{{ model }};
 use App\Modules\{{ module }}\Repositories\{{ model }}RepositoryInterface;
 
+/**
+ * @extends Repository<{{ model }}>
+ */
 class {{ model }}Repository extends Repository implements {{ model }}RepositoryInterface
 {
     public function __construct({{ model }} $model)

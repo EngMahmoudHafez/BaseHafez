@@ -8,14 +8,15 @@ use App\Modules\Auth\Models\User;
 
 class AuthAccountService
 {
+    /** @param array<string, mixed> $validatedInput */
     public function resolveCountry(array $validatedInput): Country
     {
         return isset($validatedInput['country_id'])
-            ? Country::query()->findOrFail($validatedInput['country_id'])
+            ? Country::query()->findOrFail((int) $validatedInput['country_id'])
             : Country::query()->where('dial_code', $validatedInput['country_code'])->firstOrFail();
     }
 
-    public function normalizeContactNumber(?string $number, string $dialCode): ?string
+    public function normalizeContactNumber(?string $number, ?string $dialCode): ?string
     {
         if ($number === null || trim($number) === '') {
             return null;
@@ -27,11 +28,15 @@ class AuthAccountService
             return $number;
         }
 
-        return $dialCode . ltrim($number, '0');
+        return ($dialCode ?? '') . ltrim($number, '0');
     }
 
-    public function findUserByCountryPhone(Country $country, string $phone): ?User
+    public function findUserByCountryPhone(Country $country, ?string $phone): ?User
     {
+        if ($phone === null) {
+            return null;
+        }
+
         return User::query()
             ->where('country_id', $country->id)
             ->where(function ($query) use ($phone) {
@@ -41,7 +46,11 @@ class AuthAccountService
             ->first();
     }
 
-    public function pendingAuthUserAttributes(Country $country, array $signUpInput, string $phone): array
+    /**
+     * @param  array<string, mixed>  $signUpInput
+     * @return array<string, mixed>
+     */
+    public function pendingAuthUserAttributes(Country $country, array $signUpInput, ?string $phone): array
     {
         return [
             'country_id' => $country->id,
@@ -53,6 +62,7 @@ class AuthAccountService
         ];
     }
 
+    /** @param array<string, mixed> $userAttributes */
     public function createOrUpdatePendingAuthUser(?User $user, array $userAttributes): User
     {
         if ($user) {
@@ -72,6 +82,7 @@ class AuthAccountService
             ->exists();
     }
 
+    /** @return array<string, mixed> */
     public function userPayload(User $user, ?string $otpToken = null, ?string $token = null): array
     {
         return array_filter([
@@ -120,6 +131,6 @@ class AuthAccountService
 
     public function statusValue(User $user): string
     {
-        return $user->status instanceof UserStatus ? $user->status->value : (string) $user->status;
+        return $user->status->value;
     }
 }

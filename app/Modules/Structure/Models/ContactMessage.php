@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  */
 class ContactMessage extends Model
 {
+    /** @use HasFactory<ContactMessageFactory> */
     use HasFactory;
 
     protected $table = 'contact_messages';

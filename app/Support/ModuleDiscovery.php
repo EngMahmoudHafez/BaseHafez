@@ -8,7 +8,7 @@ use ReflectionClass;
 class ModuleDiscovery
 {
     /**
-     * @return list<class-string>
+     * @return array<int, class-string>
      */
     public static function serviceProviders(): array
     {
@@ -19,7 +19,7 @@ class ModuleDiscovery
     }
 
     /**
-     * @return list<class-string>
+     * @return array<int, class-string>
      */
     public static function databaseSeeders(): array
     {
@@ -60,6 +60,10 @@ class ModuleDiscovery
 
     private static function disablesAutoDiscovery(string $class): bool
     {
+        if (! class_exists($class)) {
+            return false;
+        }
+
         $reflection = new ReflectionClass($class);
 
         if ($reflection->isAbstract()) {

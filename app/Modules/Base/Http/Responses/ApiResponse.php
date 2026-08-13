@@ -76,7 +76,8 @@ final class ApiResponse
     }
 
     /**
-     * @return array<string,int>
+     * @param  LengthAwarePaginator<int, mixed>  $paginator
+     * @return array<string, int>
      */
     private static function pagination(LengthAwarePaginator $paginator): array
     {

@@ -172,6 +172,7 @@ CSS;
         return $settings;
     }
 
+    /** @param array<int, string> $allowedValues */
     private static function allowedCookie(string $name, array $allowedValues, string $fallback): string
     {
         $value = self::rawCookie($name);

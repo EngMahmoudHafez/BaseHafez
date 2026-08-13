@@ -3,6 +3,7 @@
 namespace App\Modules\Auth\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -12,12 +13,13 @@ class ManagerResetPasswordNotification extends Notification
 
     public function __construct(private readonly string $token) {}
 
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['mail'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail(CanResetPassword $notifiable): MailMessage
     {
         $resetUrl = route('auth.password.reset', [
             'token' => $this->token,

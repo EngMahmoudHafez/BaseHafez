@@ -65,6 +65,7 @@ trait FileTrait
         }
     }
 
+    /** @param array<string, mixed> $logData */
     final public function safeDeleteFile(?string $path, string $context, array $logData = []): void
     {
         if ($path === null || $path === '') {
@@ -81,6 +82,10 @@ trait FileTrait
         }
     }
 
+    /**
+     * @param  array<int, string>  $paths
+     * @param  array<string, mixed>  $logData
+     */
     final public function safeDeleteFiles(array $paths, string $context, array $logData = []): void
     {
         foreach ($paths as $path) {

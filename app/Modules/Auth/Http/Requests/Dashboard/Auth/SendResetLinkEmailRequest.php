@@ -2,6 +2,7 @@
 
 namespace App\Modules\Auth\Http\Requests\Dashboard\Auth;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SendResetLinkEmailRequest extends FormRequest
@@ -11,6 +12,9 @@ class SendResetLinkEmailRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

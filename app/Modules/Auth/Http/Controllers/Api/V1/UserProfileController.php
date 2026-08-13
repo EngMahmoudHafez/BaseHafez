@@ -20,7 +20,7 @@ class UserProfileController extends Controller
      */
     public function getProfile(Request $request): JsonResponse
     {
-        return $this->profileService->getProfile((int) $request->user()->getAuthIdentifier());
+        return $this->profileService->getProfile((int) $request->user()?->getAuthIdentifier());
     }
 
     /**
@@ -29,7 +29,7 @@ class UserProfileController extends Controller
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
         return $this->profileService->updateProfile(
-            (int) $request->user()->getAuthIdentifier(),
+            (int) $request->user()?->getAuthIdentifier(),
             $request->validated(),
             $request->file('profile_image'),
         );
@@ -41,7 +41,7 @@ class UserProfileController extends Controller
     public function uploadProfileImage(UploadProfileImageRequest $request): JsonResponse
     {
         return $this->profileService->uploadProfileImage(
-            (int) $request->user()->getAuthIdentifier(),
+            (int) $request->user()?->getAuthIdentifier(),
             $request->file('profile_image'),
         );
     }

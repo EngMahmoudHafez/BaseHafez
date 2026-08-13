@@ -3,6 +3,7 @@
 namespace App\Modules\Notifications\Http\Requests\Dashboard;
 
 use App\Modules\Notifications\Models\Notification;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,6 +14,9 @@ class NotificationIndexRequest extends FormRequest
         return auth('manager')->check();
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

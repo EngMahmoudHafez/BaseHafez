@@ -22,7 +22,7 @@ class AuthOtpService
 
     public function issuePhone(User $user, string $purpose): AuthOtp
     {
-        $identifier = $user->phone ?: $user->whatsapp;
+        $identifier = (string) ($user->phone ?: $user->whatsapp);
         [$otp, $code] = $this->create($user, $identifier, 'phone', $purpose);
 
         return $this->attachDebugCode($otp, $code);
@@ -50,6 +50,7 @@ class AuthOtpService
         return $this->attachDebugCode($otp, $code);
     }
 
+    /** @param string|array<int, string>|null $purposes */
     public function verify(
         string $otpToken,
         string $code,

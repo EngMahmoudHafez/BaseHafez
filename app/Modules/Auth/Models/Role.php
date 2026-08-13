@@ -24,6 +24,7 @@ class Role extends RoleModel
         'description',
     ];
 
+    /** @return MorphToMany<Manager, $this> */
     public function managers(): MorphToMany
     {
         return $this->morphedByMany(
@@ -35,6 +36,7 @@ class Role extends RoleModel
         );
     }
 
+    /** @return Attribute<int, never> */
     public function managersCount(): Attribute
     {
         return Attribute::make(get: function () {

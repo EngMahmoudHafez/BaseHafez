@@ -2,6 +2,7 @@
 
 namespace App\Modules\Auth\Http\Requests\Api\V1\Auth;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ResendOtpRequest extends FormRequest
@@ -11,6 +12,9 @@ class ResendOtpRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class DeviceToken extends Model
 {
+    /** @use HasFactory<DeviceTokenFactory> */
     use HasFactory;
 
     public const PLATFORM_ANDROID = 'android';

@@ -25,7 +25,7 @@ class LaratrustSeeder extends Seeder
             return;
         }
 
-        $mapPermission = collect($seederConfig['permissions_map'] ?? []);
+        $mapPermission = collect((array) ($seederConfig['permissions_map'] ?? []));
         foreach ($config as $key => $modules) {
 
             $role = Role::query()->firstOrCreate([
@@ -57,6 +57,7 @@ class LaratrustSeeder extends Seeder
         }
     }
 
+    /** @return array<string, mixed> */
     private function getSeederConfig(): array
     {
         $config = Config::get('laratrust_seeder');

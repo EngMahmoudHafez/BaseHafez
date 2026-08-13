@@ -5,6 +5,7 @@ namespace App\Modules\Auth\Http\Requests\Dashboard\Managers;
 use App\Modules\Auth\Enums\UserStatus;
 use App\Modules\Auth\Rules\AssignableRole;
 use App\Modules\Auth\Rules\Phone;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,9 @@ class StoreManagerRequest extends FormRequest
         return auth('manager')->check();
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [
