@@ -24,7 +24,7 @@
         "node-waves": "0.7.6",
         "perfect-scrollbar": "1.5.6",
         "quill": "2.0.3",
-        "select2": "4.0.13",
+        "select2": "4.1.0",
         "sweetalert2": "11.26.25"
     },
     "devDependencies": {
